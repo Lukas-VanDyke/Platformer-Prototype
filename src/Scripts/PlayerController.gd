@@ -1,8 +1,8 @@
 extends KinematicBody2D
 
-export (int) var movementSpeed = 300
-export (int) var maxSpeed = 200
+export (int) var movementSpeed = 500
 export (int) var climbingSpeed = 100
+export (int) var wallSlideSpeed = 200
 export (int) var gravity = 2500
 export (int) var jumpSpeed = -1000
 
@@ -15,9 +15,13 @@ func _physics_process(delta):
 	
 func get_input():
 	velocity.x = 0
+	if is_on_wall():
+		if velocity.y > wallSlideSpeed:
+			velocity.y = wallSlideSpeed
+	
 	if Input.is_action_pressed("left"):
 		velocity.x -= movementSpeed
 	if Input.is_action_pressed("right"):
 		velocity.x += movementSpeed
-	if Input.is_action_just_pressed("space") and is_on_floor():
+	if Input.is_action_just_pressed("space") and (is_on_floor() or is_on_wall()):
 		velocity.y = jumpSpeed

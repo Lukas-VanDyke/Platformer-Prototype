@@ -69,6 +69,7 @@ right_click={
 2d_physics/layer_4="gadgets"
 2d_physics/layer_5="rope"
 2d_physics/layer_6="floor"
+2d_physics/layer_7="ceiling"
 
 [rendering]
 
