@@ -1,6 +1,7 @@
 extends KinematicBody2D
 
 export (int) var movementSpeed = 500
+export (int) var grapplingSpeed = 1000
 export (int) var climbingSpeed = 100
 export (int) var wallSlideSpeed = 200
 export (int) var gravity = 2500
@@ -10,10 +11,15 @@ var velocity = Vector2()
 
 var grappling = false
 var grapplingTarget
+var previousPosition = Vector2()
 
 func _physics_process(delta):
 	if grappling:
-		velocity = (grapplingTarget - global_position).normalized() * movementSpeed
+		if (previousPosition - position).length() < 3:
+			grappling = false
+		
+		previousPosition = position
+		velocity = (grapplingTarget - global_position).normalized() * grapplingSpeed
 		if (grapplingTarget - global_position).length() > 33:
 			velocity = move_and_slide(velocity)
 		else:
