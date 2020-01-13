@@ -19,3 +19,12 @@ shape = SubResource( 1 )
 [node name="PlayerVisibility" type="VisibilityNotifier2D" parent="."]
 position = Vector2( 0.291985, -0.583982 )
 scale = Vector2( 3.13152, 3.16072 )
+
+[node name="Camera" type="Camera2D" parent="."]
+current = true
+smoothing_enabled = true
+drag_margin_left = 0.05
+drag_margin_top = 0.05
+drag_margin_right = 0.05
+drag_margin_bottom = 0.05
+editor_draw_drag_margin = true
