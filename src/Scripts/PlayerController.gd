@@ -1,6 +1,7 @@
 extends KinematicBody2D
 
 onready var grapplingHook = load("res://Scenes/Gadgets/GrapplingHook.tscn")
+onready var grappleLine = load("res://Scenes/Gadgets/GrappleLine.tscn")
 
 export (int) var movementSpeed = 500
 export (int) var grapplingSpeed = 1000
@@ -11,25 +12,28 @@ export (int) var jumpSpeed = -1000
 
 var velocity = Vector2()
 
-var waiting = false
-
 var grappling = false
 var grapplingTarget
 var previousPosition = Vector2()
 
 var hook
+var line
 
 func _physics_process(delta):
-	#if waiting:
-		#return
+	if line != null:
+		line.points[0] = global_position
 	
 	if grappling:
-		if (previousPosition - position).length() < 3:
+		if (previousPosition - global_position).length() < 3:
 			grappling = false
-			remove_child(hook)
+			get_parent().remove_child(hook)
 			hook.queue_free()
+			get_parent().remove_child(line)
+			if line != null:
+				line.queue_free()
+				line = null
 		
-		previousPosition = position
+		previousPosition = global_position
 		velocity = (grapplingTarget - global_position).normalized() * grapplingSpeed
 		if (grapplingTarget - global_position).length() > 33:
 			velocity = move_and_slide(velocity)
@@ -37,6 +41,10 @@ func _physics_process(delta):
 			grappling = false
 			get_parent().remove_child(hook)
 			hook.queue_free()
+			get_parent().remove_child(line)
+			if line != null:
+				line.queue_free()
+				line = null
 		return
 	
 	get_input()
@@ -62,18 +70,21 @@ func get_input():
 		var space_state = get_world_2d().direct_space_state
 		var result = space_state.intersect_ray(global_position, get_global_mouse_position(), [self])
 		if result:
-			waiting = true
 			SendGrapple(result.position)
 
 func SendGrapple(targetPosition):
 	hook = grapplingHook.instance()
 	get_parent().add_child(hook)
-	print(global_position)
+	
+	line = grappleLine.instance()
+	line.points[0] = global_position
+	line.points[1] = global_position
+	get_parent().add_child(line)
+	
 	hook.set_global_position(global_position)
-	hook.SetVelocity(targetPosition)
+	hook.SetVelocity(targetPosition, line)
 	hook.connect("grapple_hit", self, "StartGrapple")
 	
 func StartGrapple(grapplePosition):
 	grapplingTarget = grapplePosition
 	grappling = true
-	waiting = false
