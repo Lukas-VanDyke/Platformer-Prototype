@@ -55,6 +55,8 @@ func get_input():
 		velocity.x += movementSpeed
 	if Input.is_action_just_pressed("space") and (is_on_floor() or is_on_wall()):
 		velocity.y = jumpSpeed
+	if Input.is_action_just_released("space"):
+		velocity.y += 300
 		
 	if Input.is_action_just_pressed("click"):
 		var space_state = get_world_2d().direct_space_state
