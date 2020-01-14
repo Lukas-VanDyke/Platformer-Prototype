@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+onready var grapplingHook = load("res://Scenes/Gadgets/GrapplingHook.tscn")
+
 export (int) var movementSpeed = 500
 export (int) var grapplingSpeed = 1000
 export (int) var climbingSpeed = 100
@@ -9,14 +11,23 @@ export (int) var jumpSpeed = -1000
 
 var velocity = Vector2()
 
+var waiting = false
+
 var grappling = false
 var grapplingTarget
 var previousPosition = Vector2()
 
+var hook
+
 func _physics_process(delta):
+	if waiting:
+		return
+	
 	if grappling:
 		if (previousPosition - position).length() < 3:
 			grappling = false
+			remove_child(hook)
+			hook.queue_free()
 		
 		previousPosition = position
 		velocity = (grapplingTarget - global_position).normalized() * grapplingSpeed
@@ -24,6 +35,8 @@ func _physics_process(delta):
 			velocity = move_and_slide(velocity)
 		else:
 			grappling = false
+			get_parent().remove_child(hook)
+			hook.queue_free()
 		return
 	
 	get_input()
@@ -47,5 +60,17 @@ func get_input():
 		var space_state = get_world_2d().direct_space_state
 		var result = space_state.intersect_ray(global_position, get_global_mouse_position(), [self])
 		if result:
-			grapplingTarget = result.position
-			grappling = true
+			waiting = true
+			SendGrapple(result.position)
+
+func SendGrapple(targetPosition):
+	hook = grapplingHook.instance()
+	get_parent().add_child(hook)
+	hook.set_global_position(global_position + ((targetPosition - global_position).normalized() * 64))
+	hook.SetVelocity(targetPosition)
+	hook.connect("grapple_hit", self, "StartGrapple")
+	
+func StartGrapple(grapplePosition):
+	grapplingTarget = grapplePosition
+	grappling = true
+	waiting = false
