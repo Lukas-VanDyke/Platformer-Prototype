@@ -1,0 +1,6 @@
+[gd_scene format=2]
+
+[node name="GrappleLine" type="Line2D"]
+points = PoolVector2Array( 0, 0, 0, 0 )
+width = 2.0
+default_color = Color( 0, 0, 0, 1 )
