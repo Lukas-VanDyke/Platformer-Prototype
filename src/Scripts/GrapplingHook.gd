@@ -2,7 +2,7 @@ extends KinematicBody2D
 
 var velocity = Vector2()
 var targetPosition
-var speed = 500
+var speed = 20
 
 var hit = false
 
@@ -13,7 +13,6 @@ func _physics_process(delta):
 		return
 	
 	velocity = (targetPosition - global_position).normalized() * speed
-	print(position)
 	var collisionInfo = move_and_collide(velocity)
 	if collisionInfo:
 		velocity = Vector2(0, 0)

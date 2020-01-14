@@ -20,8 +20,8 @@ var previousPosition = Vector2()
 var hook
 
 func _physics_process(delta):
-	if waiting:
-		return
+	#if waiting:
+		#return
 	
 	if grappling:
 		if (previousPosition - position).length() < 3:
@@ -66,7 +66,8 @@ func get_input():
 func SendGrapple(targetPosition):
 	hook = grapplingHook.instance()
 	get_parent().add_child(hook)
-	hook.set_global_position(global_position + ((targetPosition - global_position).normalized() * 64))
+	print(global_position)
+	hook.set_global_position(global_position)
 	hook.SetVelocity(targetPosition)
 	hook.connect("grapple_hit", self, "StartGrapple")
 	
