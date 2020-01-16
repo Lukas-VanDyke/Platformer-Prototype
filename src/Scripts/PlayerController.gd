@@ -32,6 +32,7 @@ func _physics_process(delta):
 			grappling = false
 			get_parent().remove_child(hook)
 			hook.queue_free()
+			hook = null
 			get_parent().remove_child(line)
 			if line != null:
 				line.queue_free()
@@ -45,6 +46,7 @@ func _physics_process(delta):
 			grappling = false
 			get_parent().remove_child(hook)
 			hook.queue_free()
+			hook = null
 			get_parent().remove_child(line)
 			if line != null:
 				line.queue_free()
@@ -104,7 +106,7 @@ func get_input():
 	if Input.is_action_just_pressed("click"):
 		var space_state = get_world_2d().direct_space_state
 		var result = space_state.intersect_ray(global_position, get_global_mouse_position(), [self])
-		if result:
+		if result and hook == null:
 			SendGrapple(result.position)
 
 func SendGrapple(targetPosition):
