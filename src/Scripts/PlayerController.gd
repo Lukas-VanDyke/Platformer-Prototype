@@ -54,27 +54,27 @@ func _physics_process(delta):
 	get_input()
 	velocity.y += gravity * delta
 	if leftWall or rightWall:
-			if velocity.y > wallSlideSpeed:
-				velocity.y = wallSlideSpeed
+		if velocity.y > wallSlideSpeed:
+			velocity.y = wallSlideSpeed
 	
 	var collision = move_and_collide(velocity * delta)
 	if collision:
 		var normal = collision.normal
 		var remainder = collision.remainder
 		var horizontal_movement = abs(remainder.x)
-
+		
 		velocity.y = Vector2(0, velocity.y).slide(normal).y
 		
 		var remaining_movement = remainder.slide(normal)
 		remaining_movement = remaining_movement.normalized()
 		remaining_movement *= horizontal_movement
+		if (leftWall or rightWall) and velocity.y > 0:
+			remaining_movement /= 2
 		move_and_collide(remaining_movement)
 		
 		SetColliders(normal)
 	else:
 		SetColliders(Vector2(0, 0))
-	
-	#velocity = move_and_slide(velocity, Vector2(0, -1))
 	
 func SetColliders(normal):
 	floored = false
