@@ -12,6 +12,10 @@ export (int) var jumpSpeed = -1000
 
 var velocity = Vector2()
 
+var leftWall = false
+var rightWall = false
+var floored = false
+
 var grappling = false
 var grapplingTarget
 var previousPosition = Vector2()
@@ -49,22 +53,53 @@ func _physics_process(delta):
 	
 	get_input()
 	velocity.y += gravity * delta
-	velocity = move_and_slide(velocity, Vector2(0, -1))
+	if leftWall or rightWall:
+			if velocity.y > wallSlideSpeed:
+				velocity.y = wallSlideSpeed
+	
+	var collision = move_and_collide(velocity * delta)
+	if collision:
+		var normal = collision.normal
+		var remainder = collision.remainder
+		var horizontal_movement = abs(remainder.x)
+
+		velocity.y = Vector2(0, velocity.y).slide(normal).y
+		
+		var remaining_movement = remainder.slide(normal)
+		remaining_movement = remaining_movement.normalized()
+		remaining_movement *= horizontal_movement
+		move_and_collide(remaining_movement)
+		
+		SetColliders(normal)
+	else:
+		SetColliders(Vector2(0, 0))
+	
+	#velocity = move_and_slide(velocity, Vector2(0, -1))
+	
+func SetColliders(normal):
+	floored = false
+	leftWall = false
+	rightWall = false
+	
+	if normal == Vector2(-1, 0):
+		leftWall = true
+	elif normal == Vector2(1, 0):
+		rightWall = true
+	elif normal == Vector2(0, -1):
+		floored = true
 	
 func get_input():
 	velocity.x = 0
-	if is_on_wall():
-		if velocity.y > wallSlideSpeed:
-			velocity.y = wallSlideSpeed
 	
 	if Input.is_action_pressed("left"):
 		velocity.x -= movementSpeed
 	if Input.is_action_pressed("right"):
 		velocity.x += movementSpeed
-	if Input.is_action_just_pressed("space") and (is_on_floor() or is_on_wall()):
+	if Input.is_action_just_pressed("space") and (floored or leftWall or rightWall):
 		velocity.y = jumpSpeed
 	if Input.is_action_just_released("space"):
-		velocity.y += 300
+		if velocity.y < 0:
+			velocity.y += 300
 		
 	if Input.is_action_just_pressed("click"):
 		var space_state = get_world_2d().direct_space_state
