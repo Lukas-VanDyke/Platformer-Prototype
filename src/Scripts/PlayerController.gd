@@ -2,6 +2,7 @@ extends KinematicBody2D
 
 onready var grapplingHook = load("res://Scenes/Gadgets/GrapplingHook.tscn")
 onready var grappleLine = load("res://Scenes/Gadgets/GrappleLine.tscn")
+onready var grapplePin = load("res://Scenes/Gadgets/GrapplePin.tscn")
 
 export (int) var movementSpeed = 500
 export (int) var grapplingSpeed = 1000
@@ -22,6 +23,7 @@ var previousPosition = Vector2()
 
 var hook
 var line
+var pin
 
 func _physics_process(delta):
 	if line != null:
@@ -55,28 +57,15 @@ func _physics_process(delta):
 	
 	get_input()
 	velocity.y += gravity * delta
+	if is_on_wall():
+		if velocity.y > wallSlideSpeed:
+			velocity.y = wallSlideSpeed
 	
-	var collision = move_and_collide(velocity * delta)
-	if collision:
-		var normal = collision.normal
-		var remainder = collision.remainder
-		var horizontal_movement = abs(remainder.x)
-		
-		velocity.y = Vector2(0, velocity.y).slide(normal).y
-		
-		var remaining_movement = remainder.slide(normal)
-		remaining_movement = remaining_movement.normalized()
-		remaining_movement *= horizontal_movement
-		if (leftWall or rightWall) and velocity.y > 0:
-			remaining_movement /= 2
-		move_and_collide(remaining_movement)
-		
-		SetColliders(normal)
-		
+	velocity = move_and_slide(velocity, Vector2.UP)
+	for index in get_slide_count():
+		var collision = get_slide_collision(index)
 		if collision.collider.get_collision_layer() == 128:
 			get_parent().ResetPlayer()
-	else:
-		SetColliders(Vector2(0, 0))
 	
 func SetColliders(normal):
 	floored = false
@@ -97,7 +86,7 @@ func get_input():
 		velocity.x -= movementSpeed
 	if Input.is_action_pressed("right"):
 		velocity.x += movementSpeed
-	if Input.is_action_just_pressed("space") and (floored or leftWall or rightWall):
+	if Input.is_action_just_pressed("space") and (is_on_floor() or is_on_wall()):
 		velocity.y = jumpSpeed
 	if Input.is_action_just_released("space"):
 		if velocity.y < 0:
