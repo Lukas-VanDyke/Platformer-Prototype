@@ -12,4 +12,7 @@ func _ready():
 
 func _process(delta):
 	if not playerVisibility.is_on_screen():
-		player.set_global_position(playerStart)
+		ResetPlayer()
+		
+func ResetPlayer():
+	player.set_global_position(playerStart)

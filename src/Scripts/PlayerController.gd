@@ -70,6 +70,9 @@ func _physics_process(delta):
 		move_and_collide(remaining_movement)
 		
 		SetColliders(normal)
+		
+		if collision.collider.get_collision_layer() == 128:
+			get_parent().ResetPlayer()
 	else:
 		SetColliders(Vector2(0, 0))
 	
