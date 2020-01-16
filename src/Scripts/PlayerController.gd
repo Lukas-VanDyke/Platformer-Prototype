@@ -53,9 +53,6 @@ func _physics_process(delta):
 	
 	get_input()
 	velocity.y += gravity * delta
-	if leftWall or rightWall:
-		if velocity.y > wallSlideSpeed:
-			velocity.y = wallSlideSpeed
 	
 	var collision = move_and_collide(velocity * delta)
 	if collision:
