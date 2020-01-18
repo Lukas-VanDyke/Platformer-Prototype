@@ -3,7 +3,7 @@ extends KinematicBody2D
 onready var grapplingHook = load("res://Scenes/Gadgets/GrapplingHook.tscn")
 onready var grappleLine = load("res://Scenes/Gadgets/GrappleLine.tscn")
 
-export (int) var movementSpeed = 500
+export (int) var movementSpeed = 400
 export (int) var grapplingSpeed = 1000
 export (int) var climbingSpeed = 100
 export (int) var wallSlideSpeed = 200
@@ -11,6 +11,9 @@ export (int) var gravity = 2500
 export (int) var jumpSpeed = -1000
 
 var velocity = Vector2()
+
+var rightWall = false
+var leftWall = false
 
 var grappling = false
 var grapplingTarget
@@ -61,16 +64,45 @@ func _physics_process(delta):
 		var collision = get_slide_collision(index)
 		if collision.collider.get_collision_layer() == 128:
 			get_parent().ResetPlayer()
+			
+		SetWall(collision.normal)
+			
+func SetWall(collisionNormal):
+	rightWall = false
+	leftWall = false
+	
+	if collisionNormal == Vector2(1, 0):
+		rightWall = true
+	elif collisionNormal == Vector2(-1, 0):
+		leftWall = true
 	
 func get_input():
-	velocity.x = 0
+	if velocity.x > movementSpeed:
+		velocity.x = movementSpeed
+	if velocity.x < (-1) * movementSpeed:
+		velocity.x = (-1) * movementSpeed
+	
+	if velocity.x < 0:
+		if velocity.x < (-1) * (movementSpeed / 6):
+			velocity.x += (movementSpeed / 6)
+		else:
+			velocity.x = 0
+	elif velocity.x > 0:
+		if velocity.x > (movementSpeed / 6):
+			velocity.x -= (movementSpeed / 6)
+		else:
+			velocity.x = 0
 	
 	if Input.is_action_pressed("left"):
-		velocity.x -= movementSpeed
+		velocity.x -= movementSpeed / 2
 	if Input.is_action_pressed("right"):
-		velocity.x += movementSpeed
+		velocity.x += movementSpeed / 2
 	if Input.is_action_just_pressed("space") and (is_on_floor() or is_on_wall()):
 		velocity.y = jumpSpeed
+		if rightWall:
+			velocity.x += (movementSpeed * 5)
+		if leftWall:
+			velocity.x -= (movementSpeed * 5)
 	if Input.is_action_just_released("space"):
 		if velocity.y < 0:
 			velocity.y += 300
