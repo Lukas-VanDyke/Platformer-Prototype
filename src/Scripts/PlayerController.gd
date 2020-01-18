@@ -2,7 +2,6 @@ extends KinematicBody2D
 
 onready var grapplingHook = load("res://Scenes/Gadgets/GrapplingHook.tscn")
 onready var grappleLine = load("res://Scenes/Gadgets/GrappleLine.tscn")
-onready var grapplePin = load("res://Scenes/Gadgets/GrapplePin.tscn")
 
 export (int) var movementSpeed = 500
 export (int) var grapplingSpeed = 1000
@@ -12,10 +11,6 @@ export (int) var gravity = 2500
 export (int) var jumpSpeed = -1000
 
 var velocity = Vector2()
-
-var leftWall = false
-var rightWall = false
-var floored = false
 
 var grappling = false
 var grapplingTarget
@@ -66,18 +61,6 @@ func _physics_process(delta):
 		var collision = get_slide_collision(index)
 		if collision.collider.get_collision_layer() == 128:
 			get_parent().ResetPlayer()
-	
-func SetColliders(normal):
-	floored = false
-	leftWall = false
-	rightWall = false
-	
-	if normal == Vector2(-1, 0):
-		leftWall = true
-	elif normal == Vector2(1, 0):
-		rightWall = true
-	elif normal == Vector2(0, -1):
-		floored = true
 	
 func get_input():
 	velocity.x = 0
