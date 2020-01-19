@@ -15,6 +15,8 @@ var velocity = Vector2()
 var rightWall = false
 var leftWall = false
 
+var wallJumpCount = 0
+
 var grappling = false
 var grapplingTarget
 var previousPosition = Vector2()
@@ -53,7 +55,10 @@ func _physics_process(delta):
 				line = null
 		return
 	
-	get_input()
+	if wallJumpCount > 0:
+		wallJumpCount -= 1
+	else:
+		get_input()
 	velocity.y += gravity * delta
 	if is_on_wall():
 		if velocity.y > wallSlideSpeed:
@@ -77,32 +82,33 @@ func SetWall(collisionNormal):
 		leftWall = true
 	
 func get_input():
-	if velocity.x > movementSpeed:
-		velocity.x = movementSpeed
-	if velocity.x < (-1) * movementSpeed:
-		velocity.x = (-1) * movementSpeed
+	VelocityCheck()
 	
 	if velocity.x < 0:
-		if velocity.x < (-1) * (movementSpeed / 6):
-			velocity.x += (movementSpeed / 6)
+		if velocity.x < (-1) * (movementSpeed / 10):
+			velocity.x += (movementSpeed / 10)
 		else:
 			velocity.x = 0
 	elif velocity.x > 0:
-		if velocity.x > (movementSpeed / 6):
-			velocity.x -= (movementSpeed / 6)
+		if velocity.x > (movementSpeed / 10):
+			velocity.x -= (movementSpeed / 10)
 		else:
 			velocity.x = 0
 	
 	if Input.is_action_pressed("left"):
-		velocity.x -= movementSpeed / 2
+		velocity.x -= movementSpeed / 5
 	if Input.is_action_pressed("right"):
-		velocity.x += movementSpeed / 2
+		velocity.x += movementSpeed / 5
 	if Input.is_action_just_pressed("space") and (is_on_floor() or is_on_wall()):
 		velocity.y = jumpSpeed
 		if rightWall:
 			velocity.x += (movementSpeed * 5)
+			VelocityCheck()
+			wallJumpCount = 6
 		if leftWall:
 			velocity.x -= (movementSpeed * 5)
+			VelocityCheck()
+			wallJumpCount = 6
 	if Input.is_action_just_released("space"):
 		if velocity.y < 0:
 			velocity.y += 300
@@ -112,6 +118,12 @@ func get_input():
 		var result = space_state.intersect_ray(global_position, get_global_mouse_position(), [self])
 		if result and hook == null:
 			SendGrapple(result.position)
+			
+func VelocityCheck():
+	if velocity.x > movementSpeed:
+		velocity.x = movementSpeed
+	if velocity.x < (-1) * movementSpeed:
+		velocity.x = (-1) * movementSpeed
 
 func SendGrapple(targetPosition):
 	hook = grapplingHook.instance()
