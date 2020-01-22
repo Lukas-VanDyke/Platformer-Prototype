@@ -119,6 +119,18 @@ func get_input():
 		if result and hook == null:
 			SendGrapple(result.position)
 			
+	if Input.is_action_just_pressed("grapple_launch"):
+		var space_state = get_world_2d().direct_space_state
+		var direction = Vector2()
+		direction.x = -Input.get_action_strength("right_stick_left") + Input.get_action_strength("right_stick_right")
+		direction.y = -Input.get_action_strength("right_stick_up") + Input.get_action_strength("right_stick_down")
+		
+		var start = global_position
+		var target = start + (1000 * direction)
+		var result = space_state.intersect_ray(global_position, target, [self])
+		if result and hook == null:
+			SendGrapple(result.position)
+			
 func VelocityCheck():
 	if velocity.x > movementSpeed:
 		velocity.x = movementSpeed
