@@ -173,10 +173,10 @@ func Shoot():
 	var offset
 	if facingRight:
 		bulletVelocity = Vector2(1, 0)
-		offset = 20
+		offset = 35
 	else:
 		bulletVelocity = Vector2(-1, 0)
-		offset = -20
+		offset = -35
 		
 	newBullet.SetVelocity(bulletVelocity)
 	var bulletPosition = global_position
