@@ -2,6 +2,7 @@ extends KinematicBody2D
 
 onready var grapplingHook = load("res://Scenes/Gadgets/GrapplingHook.tscn")
 onready var grappleLine = load("res://Scenes/Gadgets/GrappleLine.tscn")
+onready var bullet = load("res://Scenes/Projectiles/Bullet.tscn")
 
 export (int) var movementSpeed = 400
 export (int) var grapplingSpeed = 1000
@@ -14,6 +15,8 @@ var velocity = Vector2()
 
 var rightWall = false
 var leftWall = false
+
+var facingRight = true
 
 var wallJumpCount = 0
 
@@ -32,11 +35,12 @@ func _physics_process(delta):
 	if grappling:
 		if (previousPosition - global_position).length() < 3:
 			grappling = false
-			get_parent().remove_child(hook)
-			hook.queue_free()
-			hook = null
-			get_parent().remove_child(line)
+			if hook != null:
+				get_parent().remove_child(hook)
+				hook.queue_free()
+				hook = null
 			if line != null:
+				get_parent().remove_child(line)
 				line.queue_free()
 				line = null
 		
@@ -46,11 +50,12 @@ func _physics_process(delta):
 			velocity = move_and_slide(velocity)
 		else:
 			grappling = false
-			get_parent().remove_child(hook)
-			hook.queue_free()
-			hook = null
-			get_parent().remove_child(line)
+			if hook != null:
+				get_parent().remove_child(hook)
+				hook.queue_free()
+				hook = null
 			if line != null:
+				get_parent().remove_child(line)
 				line.queue_free()
 				line = null
 		return
@@ -63,6 +68,11 @@ func _physics_process(delta):
 	if is_on_wall():
 		if velocity.y > wallSlideSpeed:
 			velocity.y = wallSlideSpeed
+	
+	if velocity.x > 0:
+		facingRight = true
+	if velocity.x < 0:
+		facingRight = false
 	
 	velocity = move_and_slide(velocity, Vector2.UP)
 	for index in get_slide_count():
@@ -131,6 +141,9 @@ func get_input():
 		if result and hook == null:
 			SendGrapple(result.position)
 			
+	if Input.is_action_just_pressed("shoot"):
+		Shoot()
+			
 func VelocityCheck():
 	if velocity.x > movementSpeed:
 		velocity.x = movementSpeed
@@ -153,3 +166,20 @@ func SendGrapple(targetPosition):
 func StartGrapple(grapplePosition):
 	grapplingTarget = grapplePosition
 	grappling = true
+	
+func Shoot():
+	var newBullet = bullet.instance()
+	var bulletVelocity
+	var offset
+	if facingRight:
+		bulletVelocity = Vector2(1, 0)
+		offset = 20
+	else:
+		bulletVelocity = Vector2(-1, 0)
+		offset = -20
+		
+	newBullet.SetVelocity(bulletVelocity)
+	var bulletPosition = global_position
+	bulletPosition.x += offset
+	newBullet.set_global_position(bulletPosition)
+	get_parent().add_child(newBullet)

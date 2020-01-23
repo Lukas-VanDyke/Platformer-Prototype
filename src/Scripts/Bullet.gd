@@ -1,6 +1,7 @@
 extends KinematicBody2D
 
 var velocity = Vector2()
+var speed = 20
 
 func _physics_process(delta):
 	var collisionInfo = move_and_collide(velocity)
@@ -9,4 +10,4 @@ func _physics_process(delta):
 		queue_free()
 
 func SetVelocity(newVelocity):
-	velocity = newVelocity
+	velocity = newVelocity * speed
