@@ -3,6 +3,7 @@ extends KinematicBody2D
 onready var grapplingHook = load("res://Scenes/Gadgets/GrapplingHook.tscn")
 onready var grappleLine = load("res://Scenes/Gadgets/GrappleLine.tscn")
 onready var bullet = load("res://Scenes/Projectiles/Bullet.tscn")
+onready var slash = load("res://Scenes/Melee/Slash.tscn")
 
 export (int) var movementSpeed = 400
 export (int) var grapplingSpeed = 1000

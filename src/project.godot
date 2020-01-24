@@ -99,6 +99,11 @@ shoot={
 "events": [ Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":0,"button_index":1,"pressure":0.0,"pressed":false,"script":null)
  ]
 }
+melee={
+"deadzone": 0.5,
+"events": [ Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":0,"button_index":2,"pressure":0.0,"pressed":false,"script":null)
+ ]
+}
 
 [layer_names]
 
@@ -111,6 +116,7 @@ shoot={
 2d_physics/layer_7="ceiling"
 2d_physics/layer_8="spike"
 2d_physics/layer_9="projectile"
+2d_physics/layer_10="melee"
 
 [rendering]
 
