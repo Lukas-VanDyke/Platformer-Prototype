@@ -85,6 +85,8 @@ func _physics_process(delta):
 		var collision = get_slide_collision(index)
 		if collision.collider.get_collision_layer() == 128:
 			get_parent().ResetPlayer()
+		if collision.collider.get_collision_layer() == 1024:
+			get_parent().End()
 			
 		SetWall(collision.normal)
 			

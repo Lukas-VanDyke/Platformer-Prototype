@@ -16,3 +16,6 @@ func _process(delta):
 		
 func ResetPlayer():
 	player.set_global_position(playerStart)
+	
+func End():
+	get_tree().quit()
