@@ -28,8 +28,13 @@ var previousPosition = Vector2()
 var hook
 var line
 var pin
+var slashTimer = 2
 
 func _physics_process(delta):
+	if slashTimer < 0.5:
+		slashTimer += delta
+		return
+	
 	if line != null:
 		line.points[0] = global_position
 	
@@ -144,6 +149,9 @@ func get_input():
 			
 	if Input.is_action_just_pressed("shoot"):
 		Shoot()
+		
+	if Input.is_action_just_pressed("melee"):
+		Slash()
 			
 func VelocityCheck():
 	if velocity.x > movementSpeed:
@@ -170,17 +178,27 @@ func StartGrapple(grapplePosition):
 	
 func Shoot():
 	var newBullet = bullet.instance()
-	var bulletVelocity
-	var offset
-	if facingRight:
-		bulletVelocity = Vector2(1, 0)
-		offset = 38
-	else:
-		bulletVelocity = Vector2(-1, 0)
-		offset = -38
+	var bulletVelocity = Vector2(1, 0)
+	var offset = 38
+	if not facingRight:
+		bulletVelocity.x *= -1
+		offset *= -1
 		
 	newBullet.SetVelocity(bulletVelocity)
 	var bulletPosition = global_position
 	bulletPosition.x += offset
 	newBullet.set_global_position(bulletPosition)
 	get_parent().add_child(newBullet)
+	
+func Slash():
+	slashTimer = 0
+	var newSlash = slash.instance()
+	var offset = 40
+	if not facingRight:
+		newSlash.flip()
+		offset *= -1
+		
+	var slashPosition = global_position
+	slashPosition.x += offset
+	newSlash.set_global_position(slashPosition)
+	get_parent().add_child(newSlash)
