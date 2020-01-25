@@ -18,6 +18,7 @@ var rightWall = false
 var leftWall = false
 
 var facingRight = true
+var doubleJumpUsed = false
 
 var wallJumpCount = 0
 
@@ -102,6 +103,9 @@ func SetWall(collisionNormal):
 func get_input():
 	VelocityCheck()
 	
+	if is_on_floor() or is_on_wall():
+		doubleJumpUsed = false
+	
 	if velocity.x < 0:
 		if velocity.x < (-1) * (movementSpeed / 10):
 			velocity.x += (movementSpeed / 10)
@@ -117,7 +121,7 @@ func get_input():
 		velocity.x -= movementSpeed / 5
 	if Input.is_action_pressed("right"):
 		velocity.x += movementSpeed / 5
-	if Input.is_action_just_pressed("space") and (is_on_floor() or is_on_wall()):
+	if Input.is_action_just_pressed("space") and (is_on_floor() or is_on_wall() or not doubleJumpUsed):
 		velocity.y = jumpSpeed
 		if rightWall:
 			velocity.x += (movementSpeed * 5)
@@ -127,6 +131,9 @@ func get_input():
 			velocity.x -= (movementSpeed * 5)
 			VelocityCheck()
 			wallJumpCount = 6
+			
+		if (not is_on_floor() and not is_on_wall()):
+			doubleJumpUsed = true
 	if Input.is_action_just_released("space"):
 		if velocity.y < 0:
 			velocity.y += 300
