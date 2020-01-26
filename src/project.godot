@@ -19,6 +19,14 @@ config/name="Metoridvania Prototpe"
 run/main_scene="res://Scenes/Room.tscn"
 config/icon="res://icon.png"
 
+[debug]
+
+settings/fps/force_fps=60
+
+[display]
+
+window/size/fullscreen=true
+
 [input]
 
 left={

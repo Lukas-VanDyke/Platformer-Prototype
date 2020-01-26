@@ -144,17 +144,19 @@ func get_input():
 		velocity.x += movementSpeed / 5
 	if Input.is_action_just_pressed("space") and (is_on_floor() or is_on_wall() or not doubleJumpUsed):
 		velocity.y = jumpSpeed
-		if rightWall:
-			velocity.x += (movementSpeed * 5)
-			VelocityCheck()
-			wallJumpCount = 6
-		if leftWall:
-			velocity.x -= (movementSpeed * 5)
-			VelocityCheck()
-			wallJumpCount = 6
-			
 		if (not is_on_floor() and not is_on_wall()):
 			doubleJumpUsed = true
+		else:
+			if rightWall:
+				velocity.x += (movementSpeed * 5)
+				VelocityCheck()
+				wallJumpCount = 6
+			if leftWall:
+				velocity.x -= (movementSpeed * 5)
+				VelocityCheck()
+				wallJumpCount = 6
+			
+		
 	if Input.is_action_just_released("space"):
 		if velocity.y < 0:
 			velocity.y += 300
