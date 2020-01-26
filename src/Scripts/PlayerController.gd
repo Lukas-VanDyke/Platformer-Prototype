@@ -18,7 +18,11 @@ var rightWall = false
 var leftWall = false
 
 var facingRight = true
+
 var doubleJumpUsed = false
+var dashUsed = false
+var dashing = false
+var dashTimer = 0
 
 var wallJumpCount = 0
 
@@ -35,6 +39,18 @@ func _physics_process(delta):
 	if slashTimer < 0.5:
 		slashTimer += delta
 		return
+	
+	if dashing:
+		dashTimer += (5 * delta)
+		if dashTimer > 1:
+			dashing = false
+		else:
+			velocity = Vector2(4 * movementSpeed, 0)
+			if not facingRight:
+				velocity.x *= -1
+			
+			Move()
+			return
 	
 	if line != null:
 		line.points[0] = global_position
@@ -81,6 +97,10 @@ func _physics_process(delta):
 	if velocity.x < 0:
 		facingRight = false
 	
+	Move()
+	
+		
+func Move():
 	velocity = move_and_slide(velocity, Vector2.UP)
 	for index in get_slide_count():
 		var collision = get_slide_collision(index)
@@ -105,6 +125,7 @@ func get_input():
 	
 	if is_on_floor() or is_on_wall():
 		doubleJumpUsed = false
+		dashUsed = false
 	
 	if velocity.x < 0:
 		if velocity.x < (-1) * (movementSpeed / 10):
@@ -161,6 +182,11 @@ func get_input():
 		
 	if Input.is_action_just_pressed("melee"):
 		Slash()
+		
+	if Input.is_action_just_pressed("dash") and not dashUsed:
+		dashing = true
+		dashUsed = true
+		dashTimer = 0
 			
 func VelocityCheck():
 	if velocity.x > movementSpeed:
