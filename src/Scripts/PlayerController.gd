@@ -59,7 +59,7 @@ func _physics_process(delta):
 			pounding = false
 		else:
 			velocity.x = 0
-			velocity.y += movementSpeed / 2.5
+			velocity.y += movementSpeed / 1.6
 			Move()
 			return
 	
