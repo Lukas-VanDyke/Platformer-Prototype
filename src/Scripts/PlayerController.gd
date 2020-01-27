@@ -30,6 +30,8 @@ var grappling = false
 var grapplingTarget
 var previousPosition = Vector2()
 
+var pounding = false
+
 var hook
 var line
 var pin
@@ -49,6 +51,15 @@ func _physics_process(delta):
 			if not facingRight:
 				velocity.x *= -1
 			
+			Move()
+			return
+			
+	if pounding:
+		if is_on_floor():
+			pounding = false
+		else:
+			velocity.x = 0
+			velocity.y += movementSpeed / 2.5
 			Move()
 			return
 	
@@ -189,6 +200,9 @@ func get_input():
 		dashing = true
 		dashUsed = true
 		dashTimer = 0
+		
+	if Input.is_action_just_pressed("ground_pound"):
+		pounding = true
 			
 func VelocityCheck():
 	if velocity.x > movementSpeed:
