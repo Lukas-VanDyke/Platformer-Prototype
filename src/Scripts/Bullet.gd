@@ -15,6 +15,8 @@ func _physics_process(delta):
 	
 	var collisionInfo = move_and_collide(velocity)
 	if collisionInfo:
+		if collisionInfo.collider.get_collision_layer() == 4:
+			collisionInfo.collider.HitByBullet()
 		get_parent().remove_child(self)
 		queue_free()
 
