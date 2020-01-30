@@ -40,7 +40,6 @@ var slashTimer = 2
 func _physics_process(delta):
 	if slashTimer < 0.5:
 		slashTimer += delta
-		return
 	
 	if dashing:
 		dashTimer += (5 * delta)
@@ -94,10 +93,12 @@ func _physics_process(delta):
 				line = null
 		return
 	
+	BeforeInputChecks()
 	if wallJumpCount > 0:
 		wallJumpCount -= 1
 	else:
-		get_input()
+		if (slashTimer >= 0.5):
+			get_input()
 	velocity.y += gravity * delta
 	if is_on_wall():
 		if velocity.y > wallSlideSpeed:
@@ -130,25 +131,27 @@ func SetWall(collisionNormal):
 		rightWall = true
 	elif collisionNormal == Vector2(-1, 0):
 		leftWall = true
-	
-func get_input():
+		
+func BeforeInputChecks():
 	VelocityCheck()
 	
 	if is_on_floor() or is_on_wall():
 		doubleJumpUsed = false
 		dashUsed = false
 	
-	if velocity.x < 0:
-		if velocity.x < (-1) * (movementSpeed / 10):
-			velocity.x += (movementSpeed / 10)
-		else:
-			velocity.x = 0
-	elif velocity.x > 0:
-		if velocity.x > (movementSpeed / 10):
-			velocity.x -= (movementSpeed / 10)
-		else:
-			velocity.x = 0
+	if is_on_floor():
+		if velocity.x < 0:
+			if velocity.x < (-1) * (movementSpeed / 10):
+				velocity.x += (movementSpeed / 10)
+			else:
+				velocity.x = 0
+		elif velocity.x > 0:
+			if velocity.x > (movementSpeed / 10):
+				velocity.x -= (movementSpeed / 10)
+			else:
+				velocity.x = 0
 	
+func get_input():
 	if Input.is_action_pressed("left"):
 		velocity.x -= movementSpeed / 5
 	if Input.is_action_pressed("right"):
@@ -249,7 +252,7 @@ func Slash():
 		newSlash.flip()
 		offset *= -1
 		
-	var slashPosition = global_position
+	var slashPosition = Vector2()
 	slashPosition.x += offset
-	newSlash.set_global_position(slashPosition)
-	get_parent().add_child(newSlash)
+	newSlash.set_position(slashPosition)
+	add_child(newSlash)
