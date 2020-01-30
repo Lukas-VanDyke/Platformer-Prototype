@@ -33,3 +33,9 @@ func HitByBullet():
 	if health <= 0:
 		get_parent().remove_child(self)
 		queue_free()
+		
+func HitBySlash():
+	health -=5
+	if health <= 0:
+		get_parent().remove_child(self)
+		queue_free()
